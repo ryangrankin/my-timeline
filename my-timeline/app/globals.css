@@ -1,0 +1,364 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* ==========================================
+   HORIZONTAL TIMELINE
+========================================== */
+
+.timeline-section {
+  background: #111318;
+  color: #f5f1e8;
+  padding: 100px 0 70px;
+  overflow: hidden;
+}
+
+.timeline-heading {
+  padding: 0 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 30px;
+}
+
+.timeline-eyebrow {
+  color: #b9f76a;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.timeline-heading h2 {
+  font-family: Georgia, serif;
+  font-size: clamp(48px, 7vw, 100px);
+  font-weight: 400;
+  letter-spacing: -3px;
+  margin: 15px 0;
+}
+
+.timeline-heading h2 em {
+  color: #b9f76a;
+}
+
+.timeline-intro {
+  color: #a7adb6;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.timeline-arrows {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 15px;
+}
+
+.timeline-arrows button {
+  background: transparent;
+  color: #f5f1e8;
+  border: 1px solid #4b5059;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 22px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.timeline-arrows button:hover {
+  background: #b9f76a;
+  border-color: #b9f76a;
+  color: #111318;
+}
+
+/* Category filters */
+
+.timeline-filters {
+  display: flex;
+  gap: 10px;
+  padding: 35px 6% 20px;
+  overflow-x: auto;
+}
+
+.timeline-filters button {
+  background: transparent;
+  border: 1px solid #3b4049;
+  border-radius: 30px;
+  color: #a7adb6;
+  padding: 11px 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.timeline-filters button:hover,
+.timeline-filters button.active {
+  background: #b9f76a;
+  border-color: #b9f76a;
+  color: #111318;
+}
+
+/* Horizontal scroll area */
+
+.timeline-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #b9f76a #252830;
+}
+
+.timeline-track {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  padding: 35px 6%;
+}
+
+.timeline-item {
+  position: relative;
+  width: 330px;
+  height: 560px;
+  flex-shrink: 0;
+}
+
+/* Horizontal line */
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #4b5059;
+}
+
+/* Event cards */
+
+.timeline-card {
+  position: absolute;
+  left: 15px;
+  width: 300px;
+  height: 215px;
+  padding: 25px;
+  background: #1b1e25;
+  color: #f5f1e8;
+  border: 1px solid #363b44;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s, border-color 0.25s;
+}
+
+.timeline-card:hover {
+  transform: translateY(-6px);
+  border-color: #b9f76a;
+}
+
+.timeline-item.top .timeline-card {
+  top: 15px;
+}
+
+.timeline-item.bottom .timeline-card {
+  bottom: 15px;
+}
+
+.timeline-card-category {
+  color: #b9f76a;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.timeline-card h3 {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin: 15px 0 8px;
+}
+
+.timeline-card p {
+  color: #a7adb6;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.timeline-card-more {
+  margin-top: auto;
+  padding-top: 12px;
+  color: #b9f76a;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+/* Timeline markers */
+
+.timeline-marker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+.timeline-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #b9f76a;
+  border: 4px solid #111318;
+  box-shadow: 0 0 0 2px #b9f76a;
+}
+
+.timeline-year {
+  background: #111318;
+  padding: 3px 10px;
+  color: #f5f1e8;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Scroll instruction */
+
+.timeline-hint {
+  padding: 10px 6%;
+  color: #737a85;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+/* Clickable detail modal */
+
+.timeline-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.timeline-modal {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 55px;
+  background: #1b1e25;
+  border: 1px solid #4b5059;
+  border-radius: 15px;
+}
+
+.timeline-modal h2 {
+  font-family: Georgia, serif;
+  font-size: clamp(35px, 5vw, 60px);
+  font-weight: 400;
+  margin: 20px 0;
+}
+
+.timeline-modal > p:last-child {
+  color: #a7adb6;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.timeline-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: transparent;
+  border: none;
+  color: #f5f1e8;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.timeline-modal-close:hover {
+  color: #b9f76a;
+}
+
+/* Mobile layout */
+
+@media (max-width: 700px) {
+  .timeline-section {
+    padding-top: 70px;
+  }
+
+  .timeline-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .timeline-arrows {
+    align-self: flex-end;
+  }
+
+  .timeline-item {
+    width: 290px;
+  }
+
+  .timeline-modal {
+    padding: 35px 25px;
+  }
+}
+
+
+.timeline-reflection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.timeline-reflection h3 {
+  margin-bottom: 12px;
+  color: #c5f277;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.timeline-reflection p {
+  line-height: 1.8;
+  opacity: 0.9;
+}

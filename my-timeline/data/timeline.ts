@@ -25,7 +25,7 @@ export const timelineEvents: TimelineEvent[] = [
     title: "Born in Vermont",
     category: "life",
     description:
-      "Born in Burlington, Vermont, and raised in a family with two parents working as computer engineers.",
+      "Born in Burlington, Vermont, and raised in a family with two parents working as computer engineers, as the oldest of 3 children.",
     reflection:
       "Growing up around technology gave me an early appreciation for computers and problem-solving, while my own interests developed across history, culture, and creative pursuits.",
   },
@@ -98,7 +98,7 @@ export const timelineEvents: TimelineEvent[] = [
     title: "A Summer in Florida",
     category: "life",
     description:
-      "Spent part of the summer in Florida with extended family, making memories outside my hometown.",
+      "Spent part of the summer in Florida with extended family, making memories outside my hometown, and adjusting to a post-covid world.",
   },
   {
     id: "9",
@@ -180,7 +180,7 @@ export const timelineEvents: TimelineEvent[] = [
     title: "Volunteering Through Dance",
     category: "extracurriculars",
     description:
-      "Volunteered with Arabesque Dance Studio, contributing to activities in my local community.",
+      "Volunteered with Arabesque Dance Studio as an afterschool caretaker, contributing to activities in my local community.",
   },
   {
     id: "17",
@@ -287,7 +287,7 @@ export const timelineEvents: TimelineEvent[] = [
     title: "Finding My Community",
     category: "life",
     description:
-      "Met my closest college friends while living in the dorms during freshman Welcome Week.",
+      "Met my closest college friends while living in the dorms during Welcome Week freshman yar at UH Manoa.",
     reflection:
       "My new friends came from different cities, states, and backgrounds, introducing me to perspectives I hadn't encountered growing up. I pushed myself to become more outgoing and discovered how much I enjoy meeting people, building friendships, and learning about their experiences. These relationships helped make Hawaiʻi feel like home.",
   },
@@ -348,7 +348,7 @@ export const timelineEvents: TimelineEvent[] = [
     id: "33",
     year: "2026",
     sortYear: 2026.1,
-    title: "Choosing American Studies",
+    title: "Discovering American Studies",
     category: "education",
     description:
       "Declared American Studies as a second major to pursue my longstanding interests in history, culture, and society alongside computer science.",
@@ -395,7 +395,7 @@ export const timelineEvents: TimelineEvent[] = [
     title: "Spark Studios Pixelboard",
     category: "projects",
     description:
-      "Developed an interactive pixel-art application for students, including design submissions, an administrative review system, and a public gallery.",
+      "Developed an interactive pixel-art application for students for a local VT buisness, including design submissions, an administrative review system, and a public gallery.",
     reflection:
       "Building this application gave me experience translating a client's needs into a functional product, balancing technical requirements with an accessible and engaging user experience.",
   },
@@ -406,9 +406,9 @@ export const timelineEvents: TimelineEvent[] = [
     title: "Korea-Go",
     category: "projects",
     description:
-      "Served as lead technical developer for a Korean language-learning application built with an interdisciplinary student team.",
+      "Served as lead technical developer for a Korean language-learning application built with an interdisciplinary student team as a class project.",
     reflection:
-      "Korea-Go brought together my interests in technology, education, and culture. Working with teammates from different academic backgrounds helped me think about how software can support language learning and cultural engagement.",
+      "Korea-Go brought together my interests in technology, education, and culture. Working with teammates from different academic backgrounds helped me think about how software can support language learning and cultural engagement, and strengthened my passion for working with people with diverse skill sets .",
   },
   {
     id: "39",
@@ -430,13 +430,13 @@ export const timelineEvents: TimelineEvent[] = [
     description:
       "Created a C++ pathfinding visualization project using SFML and CMake.",
     reflection:
-      "PathFinder gave me an opportunity to strengthen my C++ skills, explore algorithm visualization, and build an interactive project outside my usual web development work.",
+      "PathFinder gave me an opportunity to strengthen my C++ skills, explore algorithm visualization, and build an interactive project outside my usual web development work. I was inspired to create this to help me with the challenging algorithms and data structures",
   },
   {
     id: "41",
     year: "2026",
     sortYear: 2026.85,
-    title: "Researching Algorithmic Bias",
+    title: "Researching Algorithmic Bias in Hiring Algorithms",
     category: "education",
     description:
       "Conducted American Studies research examining how automated hiring technologies intersect with historical patterns of inequality.",

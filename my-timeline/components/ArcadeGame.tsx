@@ -59,13 +59,13 @@ export default function ArcadeGame() {
 
           this.cameras.main.setBackgroundColor("#87b8d8");
 
-// Extend the sky across the entire level
-this.add
-  .rectangle(800, 230, 1600, 460, 0x87b8d8)
-  .setDepth(-10);
+        // Extend the sky across the entire level
+        this.add
+         .rectangle(800, 230, 1600, 460, 0x87b8d8)
+         .setDepth(-10);
 
-// Keep the original Richmond scenery
-drawRichmondBackground(this);
+        // Keep the original Richmond scenery
+        drawRichmondBackground(this);
           // ==================================
           // ARCADE HEADER
           // ==================================

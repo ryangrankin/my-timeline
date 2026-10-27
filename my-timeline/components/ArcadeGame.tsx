@@ -3,6 +3,7 @@
 
 import { useEffect, useRef } from "react";
 import { drawRichmondBackground } from "./RichmondBackground";
+import { timelineEvents, type TimelineEvent } from "../data/timeline";
 
 export default function ArcadeGame() {
   const gameRef = useRef<HTMLDivElement>(null);
@@ -19,243 +20,365 @@ export default function ArcadeGame() {
       class ArcadeScene extends Phaser.Scene {
         private player!: Phaser.GameObjects.Sprite;
         private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-        private memoryOpen = false;
-        private memoryPanel?: Phaser.GameObjects.Container;
+
         private wasd!: {
           A: Phaser.Input.Keyboard.Key;
           D: Phaser.Input.Keyboard.Key;
         };
+
+        private interactKey!: Phaser.Input.Keyboard.Key;
+        private memoryOpen = false;
+
+        private memoryPanel!: Phaser.GameObjects.Container;
+        private prompt!: Phaser.GameObjects.Text;
+
+        private memoryHeading!: Phaser.GameObjects.Text;
+        private memoryYear!: Phaser.GameObjects.Text;
+        private memoryDescription!: Phaser.GameObjects.Text;
+        private memoryReflection!: Phaser.GameObjects.Text;
+
+        private checkpoints = [
+  { x: 300, eventId: "1", label: "MEMORY 01" },
+  { x: 520, eventId: "3", label: "MEMORY 02" },
+  { x: 700, eventId: "6", label: "MEMORY 03" },
+  { x: 950, eventId: "10", label: "MEMORY 04" },
+  { x: 1150, eventId: "19", label: "MEMORY 05" },
+  { x: 1450, eventId: "24", label: "MEMORY 06" },
+];
 
         constructor() {
           super("ArcadeScene");
         }
 
         create() {
-          this.cameras.main.setBackgroundColor("#080808");
-            drawRichmondBackground(this);
-          // Arcade heading
+          this.memoryOpen = false;
+
+          // ==================================
+          // RICHMOND BACKGROUND
+          // ==================================
+
+          this.cameras.main.setBackgroundColor("#87b8d8");
+
+// Extend the sky across the entire level
+this.add
+  .rectangle(800, 230, 1600, 460, 0x87b8d8)
+  .setDepth(-10);
+
+// Keep the original Richmond scenery
+drawRichmondBackground(this);
+          // ==================================
+          // ARCADE HEADER
+          // ==================================
+
           this.add
-            .text(400, 50, "LIFE IN PROGRESS", {
+            .text(400, 45, "LIFE IN PROGRESS", {
               fontFamily: "monospace",
               fontSize: "32px",
+              color: "#b6ff5c",
+              backgroundColor: "#171329",
+              padding: { x: 12, y: 6 },
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(20);
+            
+
+          this.add
+            .text(400, 95, "PLAYER ONE - VERMONT 2005", {
+              fontFamily: "monospace",
+              fontSize: "16px",
+              color: "#ffffff",
+              backgroundColor: "#171329",
+              padding: { x: 8, y: 4 },
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(20);
+
+          // Ground
+          // Ground extends across the full 1600-pixel level
+            this.add
+                .rectangle(800, 460, 1600, 8, 0xb6ff5c)
+                .setDepth(4);
+
+
+// ==================================
+// EXTENDED VERMONT SCENERY
+// ==================================
+
+const scenery = this.add.graphics();
+scenery.setDepth(2);
+
+// Distant green mountains
+scenery.fillStyle(0x395c50);
+scenery.fillTriangle(780, 455, 1050, 180, 1320, 455);
+scenery.fillTriangle(1100, 455, 1380, 230, 1600, 455);
+
+// Autumn trees
+const drawTree = (x: number, y: number, color: number) => {
+  scenery.fillStyle(0x67452e);
+  scenery.fillRect(x - 7, y - 65, 14, 65);
+
+  scenery.fillStyle(color);
+  scenery.fillRect(x - 28, y - 110, 56, 48);
+  scenery.fillRect(x - 40, y - 92, 80, 30);
+  scenery.fillRect(x - 20, y - 130, 40, 25);
+};
+
+drawTree(920, 455, 0xe58a39);
+drawTree(1130, 455, 0xd94f36);
+drawTree(1370, 455, 0xf0b443);
+drawTree(1530, 455, 0xb94b49);
+          // ==================================
+          // PIXEL ART PLAYER
+          // ==================================
+
+          const pixel = 4;
+
+          const sprite = [
+            "...YYY.YYY...",
+            "..YYYYYYYYY..",
+            ".YY.YYYYY.YY.",
+            ".Y.YYYYYYY.Y.",
+            ".YYSSSSSSSYY.",
+            ".YSSKSSSKSSY.",
+            ".YYSSSSSSSYY.",
+            "..YSSSMSSSY..",
+            "...YSSSSSY...",
+            "....PPPPP....",
+            "...PPPPPPP...",
+            "..PPWPPPWPP..",
+            "..PPPPPPPPP..",
+            "...PPPPPPP...",
+            "....DDDDD....",
+            "....DDDDD....",
+            "....DD.DD....",
+            "....DD.DD....",
+            "...PPP.PPP...",
+          ];
+
+          const colors: Record<string, number> = {
+            Y: 0xffd447,
+            S: 0xf2bd91,
+            K: 0x241c20,
+            M: 0xd66b84,
+            P: 0xff69b4,
+            W: 0xffc0dc,
+            D: 0x6555aa,
+          };
+
+          const spriteWidth = Math.max(
+            ...sprite.map((row) => row.length)
+          );
+
+          const graphics = this.add.graphics();
+
+          sprite.forEach((row, y) => {
+            [...row].forEach((char, x) => {
+              if (colors[char] !== undefined) {
+                graphics.fillStyle(colors[char]);
+                graphics.fillRect(
+                  x * pixel,
+                  y * pixel,
+                  pixel,
+                  pixel
+                );
+              }
+            });
+          });
+
+          if (!this.textures.exists("player")) {
+            graphics.generateTexture(
+              "player",
+              spriteWidth * pixel,
+              sprite.length * pixel
+            );
+          }
+
+          graphics.destroy();
+
+          this.player = this.add.sprite(100, 425, "player");
+          this.player.setDepth(10);
+
+          // Make the level wider than the screen
+this.cameras.main.setBounds(0, 0, 1600, 600);
+
+// Camera follows the player horizontally
+this.cameras.main.startFollow(this.player, true, 0.08, 0);
+
+// Keep the player near the center of the screen
+this.cameras.main.setFollowOffset(0, 0);
+
+          // ==================================
+          // MEMORY CHECKPOINTS
+          // ==================================
+
+          this.checkpoints.forEach((checkpoint, index) => {
+            const x = checkpoint.x;
+
+            const marker = this.add.graphics();
+            marker.setDepth(5);
+
+            // Purple checkpoint body
+            marker.fillStyle(0x704e94);
+            marker.fillRect(x - 25, 375, 50, 80);
+
+            // Pink top
+            marker.fillStyle(0xff69b4);
+            marker.fillRect(x - 30, 370, 60, 12);
+
+            // Pixel heart
+            marker.fillStyle(0xffc0dc);
+            marker.fillRect(x - 12, 395, 10, 10);
+            marker.fillRect(x + 2, 395, 10, 10);
+            marker.fillRect(x - 8, 405, 16, 10);
+            marker.fillRect(x - 4, 415, 8, 6);
+
+            this.add
+              .text(x, 345, checkpoint.label, {
+                fontFamily: "monospace",
+                fontSize: "15px",
+                color: "#ffcae8",
+                backgroundColor: "#171329",
+                padding: { x: 6, y: 4 },
+              })
+              .setOrigin(0.5)
+              .setDepth(15);
+          });
+
+          // ==================================
+          // INTERACTION PROMPT
+          // ==================================
+
+          this.prompt = this.add
+            .text(520, 315, "PRESS E TO EXPLORE", {
+              fontFamily: "monospace",
+              fontSize: "15px",
+              color: "#ffffff",
+              backgroundColor: "#a83378",
+              padding: { x: 10, y: 6 },
+            })
+            .setOrigin(0.5)
+            .setDepth(30)
+            .setVisible(false);
+
+          // ==================================
+          // MEMORY POPUP
+          // ==================================
+
+          const overlay = this.add.rectangle(
+            400,
+            300,
+            800,
+            600,
+            0x000000,
+            0.8
+          );
+
+          const panel = this.add.rectangle(
+            400,
+            300,
+            650,
+            390,
+            0x171329
+          );
+
+          panel.setStrokeStyle(5, 0xff69b4);
+
+          this.memoryHeading = this.add
+            .text(400, 155, "", {
+              fontFamily: "monospace",
+              fontSize: "22px",
+              color: "#ff91c8",
+              align: "center",
+              wordWrap: { width: 570 },
+            })
+            .setOrigin(0.5);
+
+          this.memoryYear = this.add
+            .text(400, 200, "", {
+              fontFamily: "monospace",
+              fontSize: "16px",
               color: "#b6ff5c",
             })
             .setOrigin(0.5);
 
-          this.add
-            .text(400, 95, "PLAYER ONE  -  VERMONT 2005", {
+          this.memoryDescription = this.add
+            .text(400, 260, "", {
               fontFamily: "monospace",
               fontSize: "16px",
               color: "#ffffff",
+              align: "center",
+              wordWrap: { width: 550 },
+              lineSpacing: 7,
             })
             .setOrigin(0.5);
 
-          // Ground
-          this.add.rectangle(
-            400,
-            460,
-            800,
-            8,
-            0xb6ff5c
-          );
+          this.memoryReflection = this.add
+            .text(400, 350, "", {
+              fontFamily: "monospace",
+              fontSize: "14px",
+              color: "#ffcae8",
+              align: "center",
+              wordWrap: { width: 550 },
+              lineSpacing: 5,
+            })
+            .setOrigin(0.5);
 
-          // Player character
-          
-const pixel = 4;
+          const closeText = this.add
+            .text(400, 455, "[ PRESS E TO CLOSE ]", {
+              fontFamily: "monospace",
+              fontSize: "16px",
+              color: "#b6ff5c",
+            })
+            .setOrigin(0.5);
 
-// 8-bit girl with blonde curls and a pink outfit
-const sprite = [
-  "...YYY.YYY...",
-  "..YYYYYYYYY..",
-  ".YY.YYYYY.YY.",
-  ".Y.YYYYYYY.Y.",
-  ".YYSSSSSSSYY.",
-  ".YSSKSSSKSSY.",
-  ".YYSSSSSSSYY.",
-  "..YSSSMSSSY..",
-  "...YSSSSSY...",
-  "....PPPPP....",
-  "...PPPPPPP...",
-  "..PPWPPPWPP..",
-  "..PPPPPPPPP..",
-  "...PPPPPPP...",
-  "....DDDDD....",
-  "....DDDDD....",
-  "....DD.DD....",
-  "....DD.DD....",
-  "...PPP.PPP...",
-];
+          this.memoryPanel = this.add.container(0, 0, [
+            overlay,
+            panel,
+            this.memoryHeading,
+            this.memoryYear,
+            this.memoryDescription,
+            this.memoryReflection,
+            closeText,
+          ]);
 
-const colors: Record<string, number> = {
-  Y: 0xffd447, // Blonde curly hair
-  S: 0xf2bd91, // Skin
-  K: 0x241c20, // Eyes
-  M: 0xd66b84, // Smile
-  P: 0xff69b4, // Pink outfit and shoes
-  W: 0xffc0dc, // Light pink shirt detail
-  D: 0x6555aa, // Purple pants
-};
+          this.memoryPanel.setDepth(100);
+          this.memoryPanel.setScrollFactor(0);
+          this.memoryPanel.setVisible(false);
 
-const spriteWidth = Math.max(...sprite.map((row) => row.length));
+          // ==================================
+          // KEYBOARD CONTROLS
+          // ==================================
 
-const graphics = this.add.graphics();
-
-sprite.forEach((row, y) => {
-  [...row].forEach((char, x) => {
-    if (colors[char] !== undefined) {
-      graphics.fillStyle(colors[char]);
-      graphics.fillRect(
-        x * pixel,
-        y * pixel,
-        pixel,
-        pixel
-      );
-    }
-  });
-});
-
-graphics.generateTexture(
-  "player",
-  spriteWidth * pixel,
-  sprite.length * pixel
-);
-
-graphics.destroy();
-
-this.player = this.add.sprite(100, 425, "player");
-this.player.setDepth(10);
-
-
-
-const checkpointX = 520;
-
-
-const checkpoint = this.add.graphics();
-checkpoint.setDepth(5);
-
-// Pink arcade checkpoint
-checkpoint.fillStyle(0x704e94);
-checkpoint.fillRect(checkpointX - 25, 375, 50, 80);
-
-checkpoint.fillStyle(0xff69b4);
-checkpoint.fillRect(checkpointX - 30, 370, 60, 12);
-
-// Checkpoint label
-this.add
-  .text(checkpointX, 350, "MEMORY 01", {
-    fontFamily: "monospace",
-    fontSize: "14px",
-    color: "#ffcae8",
-    backgroundColor: "#171329",
-    padding: { x: 5, y: 3 },
-  })
-  .setOrigin(0.5)
-  .setDepth(6);
-
-
-// Prompt that appears when you approach the checkpoint
-const prompt = this.add
-  .text(checkpointX, 320, "PRESS E TO EXPLORE", {
-    fontFamily: "monospace",
-    fontSize: "15px",
-    color: "#ffb6dc",
-    backgroundColor: "#171329",
-    padding: { x: 8, y: 5 },
-  })
-  .setOrigin(0.5)
-  .setDepth(20)
-  .setVisible(false);
-
-// Create the popup, but keep it hidden initially
-const overlay = this.add.rectangle(
-  400, 300, 800, 600, 0x000000, 0.75
-);
-
-const panel = this.add.rectangle(
-  400, 300, 600, 320, 0x171329
-);
-panel.setStrokeStyle(4, 0xff69b4);
-
-const heading = this.add.text(
-  400, 185, "MEMORY 01: RICHMOND, VERMONT", {
-    fontFamily: "monospace",
-    fontSize: "22px",
-    color: "#ff91c8",
-    align: "center",
-  }
-).setOrigin(0.5);
-
-const description = this.add.text(
-  400, 285,
-  "Growing up in a small Vermont town shaped\n" +
-  "my early understanding of community and\n" +
-  "the world around me.\n\n" +
-  "My journey starts here.",
-  {
-    fontFamily: "monospace",
-    fontSize: "17px",
-    color: "#ffffff",
-    align: "center",
-    lineSpacing: 8,
-  }
-).setOrigin(0.5);
-
-const closeText = this.add.text(
-  400, 420, "[ PRESS E TO CLOSE ]", {
-    fontFamily: "monospace",
-    fontSize: "15px",
-    color: "#b6ff5c",
-  }
-).setOrigin(0.5);
-
-this.memoryPanel = this.add.container(0, 0, [
-  overlay,
-  panel,
-  heading,
-  description,
-  closeText,
-]);
-
-this.memoryPanel.setDepth(100);
-this.memoryPanel.setVisible(false);
-
-
-
-this.input.keyboard!.on("keydown-E", () => {
-  if (this.memoryOpen) {
-    this.memoryOpen = false;
-    this.memoryPanel?.setVisible(false);
-    return;
-  }
-
-  if (Math.abs(this.player.x - checkpointX) < 75) {
-    this.memoryOpen = true;
-    this.memoryPanel?.setVisible(true);
-  }
-});
-
-// Update prompt visibility as the player moves
-this.events.on("update", () => {
-  const nearby = Math.abs(this.player.x - checkpointX) < 75;
-
-  prompt.setVisible(nearby && !this.memoryOpen);
-});
-
-
-          // Keyboard controls
           this.cursors =
             this.input.keyboard!.createCursorKeys();
 
-          this.wasd =
-            this.input.keyboard!.addKeys(
-              "A,D"
-            ) as typeof this.wasd;
+          this.wasd = {
+            A: this.input.keyboard!.addKey("A"),
+            D: this.input.keyboard!.addKey("D"),
+          };
+
+          this.interactKey =
+            this.input.keyboard!.addKey("E");
+
+          this.input.keyboard!.enabled = true;
+
+          this.input.keyboard!.addCapture([
+            Phaser.Input.Keyboard.KeyCodes.LEFT,
+            Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            Phaser.Input.Keyboard.KeyCodes.E,
+          ]);
+
+          // ==================================
+          // FOOTER
+          // ==================================
 
           this.add
             .text(
               400,
               540,
-              "MOVE: LEFT / RIGHT ARROWS OR A / D",
+              "MOVE: A / D OR ARROWS    |    INTERACT: E",
               {
                 fontFamily: "monospace",
                 fontSize: "14px",
@@ -263,18 +386,113 @@ this.events.on("update", () => {
               }
             )
             .setOrigin(0.5);
+
+          this.add
+            .text(
+              400,
+              575,
+              "LEVEL 01: RICHMOND, VERMONT",
+              {
+                fontFamily: "monospace",
+                fontSize: "13px",
+                color: "#ff91c8",
+              }
+            )
+            .setScrollFactor(0)
+            .setOrigin(0.5);
         }
 
-        update(_time: number, delta: number) {
-  if (this.memoryOpen) return;
+        // ==================================
+        // FIND NEAREST CHECKPOINT
+        // ==================================
 
-  const speed = 260 * (delta / 1000);
+        private getNearbyCheckpoint() {
+          const nearby = this.checkpoints
+            .map((checkpoint) => ({
+              ...checkpoint,
+              distance: Math.abs(
+                this.player.x - checkpoint.x
+              ),
+            }))
+            .filter((checkpoint) => checkpoint.distance < 75)
+            .sort((a, b) => a.distance - b.distance);
+
+          return nearby[0] ?? null;
+        }
+
+        // ==================================
+        // OPEN MEMORY
+        // ==================================
+
+        private showMemory(memory: TimelineEvent) {
+          this.memoryHeading.setText(
+            memory.title.toUpperCase()
+          );
+
+          this.memoryYear.setText(memory.year);
+
+          this.memoryDescription.setText(
+            memory.description
+          );
+
+          this.memoryReflection.setText(
+            memory.reflection
+              ? `✦ ${memory.reflection}`
+              : ""
+          );
+
+          this.memoryOpen = true;
+          this.memoryPanel.setVisible(true);
+          this.prompt.setVisible(false);
+        }
+
+        // ==================================
+        // GAME LOOP
+        // ==================================
+
+        update(_time: number, delta: number) {
+          // Press E to interact
+          if (
+            Phaser.Input.Keyboard.JustDown(
+              this.interactKey
+            )
+          ) {
+            if (this.memoryOpen) {
+              // Close popup
+              this.memoryOpen = false;
+              this.memoryPanel.setVisible(false);
+            } else {
+              const checkpoint =
+                this.getNearbyCheckpoint();
+
+              if (checkpoint) {
+                const memory = timelineEvents.find(
+                  (event) =>
+                    event.id === checkpoint.eventId
+                );
+
+                if (memory) {
+                  this.showMemory(memory);
+                }
+              }
+            }
+          }
+
+          // Pause movement while popup is open
+          if (this.memoryOpen) {
+            this.prompt.setVisible(false);
+            return;
+          }
+
+          // Player movement
+          const speed = 260 * (delta / 1000);
 
           if (
             this.cursors.left.isDown ||
             this.wasd.A.isDown
           ) {
             this.player.x -= speed;
+            this.player.setFlipX(true);
           }
 
           if (
@@ -282,16 +500,35 @@ this.events.on("update", () => {
             this.wasd.D.isDown
           ) {
             this.player.x += speed;
+            this.player.setFlipX(false);
           }
 
-          // Keep player inside screen
+          // Keep player on screen
           this.player.x = Phaser.Math.Clamp(
             this.player.x,
-            13,
-            787
+            26,
+            1574
           );
+
+          // Show interaction prompt near a checkpoint
+          const checkpoint =
+            this.getNearbyCheckpoint();
+
+          if (checkpoint) {
+            this.prompt.setPosition(
+              checkpoint.x,
+              315
+            );
+            this.prompt.setVisible(true);
+          } else {
+            this.prompt.setVisible(false);
+          }
         }
       }
+
+      // ==================================
+      // START PHASER
+      // ==================================
 
       game = new Phaser.Game({
         type: Phaser.AUTO,
